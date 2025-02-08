@@ -1,6 +1,7 @@
 import os
 import logging
 import asyncio
+import json
 from telegram import Bot
 
 # Token do seu bot e ID do grupo
