@@ -1,12 +1,12 @@
 import os
+import time
 import logging
-import asyncio
 import json
 from telegram import Bot
 
 # Token do seu bot e ID do grupo
 TOKEN = "7620534813:AAHcBSowzuDOZV3zmuXdmT7jLoba_O8cU0U"
-CHAT_ID = "-1002397537980"
+CHAT_ID = "--1002397537980"
 
 # Configuração do bot
 bot = Bot(token=TOKEN)
