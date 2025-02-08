@@ -26,19 +26,34 @@ receitas = [
     "Receita 7: **Mingau de arroz com banana 🍌🍚**\n\n**Ingredientes:**\n- 2 colheres (sopa) de arroz cozido\n- 1 banana madura amassada\n- 1/2 xícara de leite materno ou fórmula\n\n**Modo de preparo:**\nCozinhe o arroz até ele estar bem macio. Em uma panela, misture o arroz cozido com o leite e cozinhe até o mingau ficar bem cremoso. Depois, adicione a banana amassada e misture bem. Deixe esfriar antes de servir.",
 ]
 
-# Função assíncrona para enviar as receitas
-async def enviar_receitas():
-    while True:
-        for receita in receitas:
-            # Espera assíncrona para o envio de mensagens
-            await bot.send_message(chat_id=CHAT_ID, text=receita)
-            await asyncio.sleep(86400)  # Espera 24 horas (86400 segundos) antes de enviar a próxima receita
+# Arquivo que salva o índice da última receita enviada
+SAVE_FILE = "last_sent.json"
 
-# Função principal para iniciar o envio das receitas
-async def main():
-    logging.basicConfig(level=logging.INFO)
-    await enviar_receitas()
+def get_last_index():
+    """Lê o índice da última receita enviada do arquivo."""
+    if os.path.exists(SAVE_FILE):
+        with open(SAVE_FILE, "r") as f:
+            data = json.load(f)
+            return data.get("last_index", -1)
+    return -1
 
-# Inicia o envio das receitas
+def save_last_index(index):
+    """Salva o índice da última receita enviada no arquivo."""
+    with open(SAVE_FILE, "w") as f:
+        json.dump({"last_index": index}, f)
+
+def enviar_receita_diaria():
+    """Envia uma receita por dia, sem repetir."""
+    last_index = get_last_index()
+    next_index = (last_index + 1) % len(receitas)  # Avança para a próxima receita
+
+    receita = receitas[next_index]
+    bot.send_message(chat_id=CHAT_ID, text=receita)
+
+    save_last_index(next_index)  # Salva o índice da receita enviada
+    print(f"✅ Receita enviada: {receita}")  # Apenas para verificação nos logs
+
+# Roda apenas 1 vez ao executar o script
 if __name__ == "__main__":
-    asyncio.run(main())
+    logging.basicConfig(level=logging.INFO)
+    enviar_receita_diaria()
